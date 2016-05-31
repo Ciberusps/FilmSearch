@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Net.Cache;
+using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -67,7 +68,7 @@ namespace Test
         private void CloseClick(object sender, RoutedEventArgs e)
         {
             Menu.Hide();
-            
+
         }
 
         /*private void DefaultClick(object sender, RoutedEventArgs e)
@@ -136,9 +137,33 @@ namespace Test
             Movie movie = (Movie)GenreList.SelectedItem;
             movie.GetMovie();
 
-            ContentTabControl.SelectedItem = FilmDescriptionTab;
+           /* MovieDescription.DataContext = movie;
+            MovieDescription.Content = movie;*/
 
-//            MovieDescription.DataContext = movie;
+            MovieDescriptionImage.Source = new BitmapImage(new Uri(movie.bigImage));
+
+
+            MovieDescriptionNameRU.Text = movie.nameRU;
+            MovieDescriptionNameEN.Text = movie.nameEN;
+
+            if (movie.year == null) MovieDescriptionYear.Text = "неизвестно"; else MovieDescriptionYear.Text = movie.year;
+            if (movie.country == null) MovieDescriptionCountry.Text = "неизвестно"; else MovieDescriptionCountry.Text = movie.country;
+            if (movie.slogan == null) MovieDescriptionSlogan.Text = "неизвестно"; else MovieDescriptionSlogan.Text = movie.slogan;
+
+            if (movie.genre == null) MovieDescriptionGenre.Text = "неизвестно"; else MovieDescriptionGenre.Text = movie.genre;
+            if (movie.budgetData.budget == null) MovieDescriptionBudget.Text = "неизвестно"; else MovieDescriptionBudget.Text = movie.budgetData.budget;
+            if (movie.budgetData.grossRU == null) MovieDescriptionGrossRU.Text = "неизвестно"; else MovieDescriptionGrossRU.Text = movie.budgetData.grossRU;
+            if (movie.budgetData.grossUSA == null) MovieDescriptionGenreGrossUSA.Text = "неизвестно"; else MovieDescriptionGenreGrossUSA.Text = movie.budgetData.grossUSA;
+            if (movie.budgetData.grossWorld == null) MovieDescriptionGrossWorld.Text = "неизвестно"; else MovieDescriptionGrossWorld.Text = movie.budgetData.grossWorld;
+            if (movie.rentData.premiereWorld == null) MovieDescriptionPremiereWorld.Text = "неизвестно"; else MovieDescriptionPremiereWorld.Text = movie.rentData.premiereWorld;
+            if (movie.rentData.premiereRU == null) MovieDescriptionPremiereRU.Text = "неизвестно"; else MovieDescriptionPremiereRU.Text = movie.rentData.premiereRU;
+            if (movie.description == null) MovieDescriptionDescription.Text = "неизвестно"; else MovieDescriptionDescription.Text = movie.description;
+            if (movie.videoURL != null) MovieDescriptionTrailer.Source = new Uri("http://www.kinopoisk.ru/film/370#trt211381");
+
+
+            //            MovieDescriptionRating.Text = movie.rating;
+
+            ContentTabControl.SelectedItem = FilmDescriptionTab;
 
             /*MyBitmapImage.Source = new BitmapImage(new Uri(movie.bigImage));
             NameRU.Text = movie.nameRU;
@@ -170,7 +195,7 @@ namespace Test
                 ? TOP_BEST_MOVIE_REQUEST + id
                 : POPULAR_MOVIE_REQUEST + id);
 
-                        MessageBox.Show(responseFromServer);
+            //MessageBox.Show(responseFromServer);
 
             JObject jRoot = JObject.Parse(responseFromServer);
             JArray jMovies = jRoot["items"] as JArray;
@@ -185,9 +210,9 @@ namespace Test
                 if (movie["year"] != null) currentMovie.year = movie["year"].ToString();
                 if (movie["filmLength"] != null) currentMovie.filmLength = movie["filmLength"].ToString();
                 if (movie["country"] != null) currentMovie.country = movie["country"].ToString();
-                if (movie["Genre"] != null) currentMovie.genre = movie["Genre"].ToString();
-                if (movie["Rating"] != null) currentMovie.rating = movie["Rating"].ToString();
-                if (movie["NameRU"] != null) currentMovie.nameRU = movie["NameRU"].ToString();
+                if (movie["genre"] != null) currentMovie.genre = movie["genre"].ToString();
+                if (movie["rating"] != null) currentMovie.rating = movie["rating"].ToString();
+                if (movie["nameRU"] != null) currentMovie.nameRU = movie["nameRU"].ToString();
                 if (movie["nameEN"] != null) currentMovie.nameEN = movie["nameEN"].ToString();
                 if (movie["posterURL"] != null) currentMovie.posterURL = movie["posterURL"].ToString();
                 if (movie["videoURL"] != null) currentMovie.videoURL = movie["videoURL"].ToString();
@@ -200,7 +225,7 @@ namespace Test
         }
     }
 
-    public class Movie 
+    public class Movie
     {
         public const string FILM_BIG_IMAGE_REQUEST = "http://st.kp.yandex.net/images/film_big/";
         public const string FILM_IMAGE_REQUEST = "http://st.kp.yandex.net/images/film/";
@@ -284,7 +309,7 @@ namespace Test
         {
             string responseFromServer = Caching.CacheRequest(FILM_REQUEST + id);
 
-//            MessageBox.Show(responseFromServer);
+            //            MessageBox.Show(responseFromServer);
 
             JObject jRoot = JObject.Parse(responseFromServer);
             if (jRoot["webURL"] != null) webURL = jRoot["webURL"].ToString();
