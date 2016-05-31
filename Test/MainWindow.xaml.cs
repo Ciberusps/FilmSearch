@@ -9,9 +9,12 @@ using System.Net.Cache;
 using System.Security.Permissions;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json.Linq;
+using xZune.Vlc;
+using Vlc = xZune.Vlc.Vlc;
 
 namespace Test
 {
@@ -25,6 +28,8 @@ namespace Test
         public MainWindow()
         {
             InitializeComponent();
+
+            MoviePlayer.instance = new MoviePlayer(MoviePlayerMediaElement, MoviePlayerPreviewImage, MoviePlayerProgress, MoviePlayerVolume, MoviePlayerCanvas, MoviePlayerPlayButton);
 
             movieGenres = new ObservableCollection<MovieGenre>
             {
@@ -116,6 +121,11 @@ namespace Test
                 Menu = Menu.Menu
             };
         }*/
+        /* private void ProgressBar_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+         {
+             var value = (float)(e.GetPosition(ProgressBar).X / ProgressBar.ActualWidth);
+             ProgressBar.Value = value;
+         }*/
 
         private void MoviesGenresList_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -137,8 +147,8 @@ namespace Test
             Movie movie = (Movie)GenreList.SelectedItem;
             movie.GetMovie();
 
-           /* MovieDescription.DataContext = movie;
-            MovieDescription.Content = movie;*/
+            /* MovieDescription.DataContext = movie;
+             MovieDescription.Content = movie;*/
 
             MovieDescriptionImage.Source = new BitmapImage(new Uri(movie.bigImage));
 
@@ -158,11 +168,14 @@ namespace Test
             if (movie.rentData.premiereWorld == null) MovieDescriptionPremiereWorld.Text = "неизвестно"; else MovieDescriptionPremiereWorld.Text = movie.rentData.premiereWorld;
             if (movie.rentData.premiereRU == null) MovieDescriptionPremiereRU.Text = "неизвестно"; else MovieDescriptionPremiereRU.Text = movie.rentData.premiereRU;
             if (movie.description == null) MovieDescriptionDescription.Text = "неизвестно"; else MovieDescriptionDescription.Text = movie.description;
-            if (movie.videoURL != null) MovieDescriptionTrailer.Source = new Uri("http://www.kinopoisk.ru/film/370#trt211381");
+            if (movie.videoURL != null)
+            {
+                MoviePlayerMediaElement.Source = new Uri(movie.videoURL);
+                MoviePlayerPreviewImage.Source = new BitmapImage(new Uri(movie.gallery[1].ToString()));
+            }
 
 
             //            MovieDescriptionRating.Text = movie.rating;
-
             ContentTabControl.SelectedItem = FilmDescriptionTab;
 
             /*MyBitmapImage.Source = new BitmapImage(new Uri(movie.bigImage));
@@ -171,7 +184,81 @@ namespace Test
             Rating.Text = movie.rating;*/
             //            MessageBox.Show(movie.NameRU + /*" " + movie.nameEN + " " + movie.country +*/ " " + movie.id + "" + movie.bigImage);
         }
+
+        private void MovieDescriptionTrailer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            MoviePlayer.instance.ChangeState();
+        }
+
+        private void MoviePreviewImage_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            MoviePlayer.instance.Play();
+        }
+
+
+        public class MoviePlayer
+        {
+            public static MoviePlayer instance;
+
+            public MediaElement mediaElement;
+            public Image previewImage;
+            public ProgressBar movieProgressBar;
+            public Slider volumeSlider;
+            public Canvas canvas;
+            public Button playButton;
+            public bool isPlaying = false;
+            public bool isPlayed = false;
+
+            public MoviePlayer(MediaElement player, Image previewImage, ProgressBar movieProgressBar, Slider volumeSlider, Canvas canvas, Button playButton)
+            {
+                this.mediaElement = player;
+                this.previewImage = previewImage;
+                this.movieProgressBar = movieProgressBar;
+                this.volumeSlider = volumeSlider;
+                this.canvas = canvas;
+                this.playButton = playButton;
+
+                mediaElement.Loaded += OnMovieLoaded;
+            }
+
+            public void Play()
+            {
+                if (!isPlayed)
+                {
+                    isPlayed = true;
+                    previewImage.Visibility = Visibility.Collapsed;
+                }
+
+                isPlaying = true;
+                mediaElement.Play();
+            }
+
+            public void Pause()
+            {
+                isPlaying = false;
+                mediaElement.Pause();
+            }
+
+            public void ChangeState()
+            {
+                if (isPlaying)
+                {
+                    Pause();
+                }
+                else
+                {
+                    Play();
+                }
+            }
+
+            public void OnMovieLoaded(Object Object, RoutedEventArgs routedEventArgs)
+            {
+                Canvas.SetLeft(playButton, mediaElement.ActualWidth);
+                Canvas.SetTop(playButton, mediaElement.ActualHeight);
+            }
+        }
     }
+
 
     public class MovieGenre
     {
