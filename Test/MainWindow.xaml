@@ -12,7 +12,7 @@
         FontFamily="Calibri"
         FontSize="16"
         Foreground="WhiteSmoke" TitleForeground="White" WindowTitleBrush="#FF3A3A3A" ResizeMode="CanResizeWithGrip">
-        
+
     <controls:MetroWindow.Resources>
         <DataTemplate x:Key="GenresListViewItemTemplate">
             <Border Margin="5" >
@@ -285,7 +285,7 @@
                                 <TextBlock Grid.Column="0" Grid.Row="12" Padding="5, 10, 0, 0" FontSize="16" Text="Трейлер: " FontFamily="Roboto" Foreground="#FFFF6600" TextWrapping="WrapWithOverflow"/>
                                 <StackPanel Grid.Column="1" Grid.Row="12" HorizontalAlignment="Left" VerticalAlignment="Top" >
                                     <!--                                    <Controls:MetroProgressBar />-->
-                                    <Canvas Name="MoviePlayerCanvas" Width="810" Height="600" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                    <Canvas Name="MoviePlayerCanvas" MinWidth="250" MinHeight="300" ScrollViewer.CanContentScroll="True">
                                         <Button Name="MoviePlayerPlayButton" Canvas.ZIndex="2" Canvas.Left="6" Canvas.Top="15" >
                                             <Button.Template>
                                                 <ControlTemplate>
@@ -293,11 +293,12 @@
                                                 </ControlTemplate>
                                             </Button.Template>
                                         </Button>
-                                        <Image Name="MoviePlayerPreviewImage" Canvas.ZIndex="1" Canvas.Top="0" Canvas.Left="0" PreviewMouseDown="MoviePreviewImage_PreviewMouseDown"/>
+                                        <Image Name="MoviePlayerPreviewImage" Canvas.ZIndex="1" Canvas.Top="0" Canvas.Left="0" Width="810" Height="600" PreviewMouseDown="MoviePreviewImage_PreviewMouseDown"/>
                                         <MediaElement Name="MoviePlayerMediaElement" Canvas.ZIndex="0" Canvas.Top="0" Canvas.Left="0" Width="810" Margin="0,10,0,0" LoadedBehavior="Manual" PreviewMouseDown="MovieDescriptionTrailer_PreviewMouseDown"/>
+                                        <controls:MetroProgressBar Canvas.Top="600" Canvas.Left="0" Name="MoviePlayerProgress" Width="810"  Opacity="0.8" Value="1" VerticalAlignment="Top" Height="21" Maximum="1" SmallChange="0.00001" Foreground="#FF595959" HorizontalAlignment="Left" Background="#FF41B1E1" />
+                                        <Slider Name="MoviePlayerVolume" Width="250" Opacity="0.8" Value="1" VerticalAlignment="Top" Height="21" Maximum="1" Foreground="#FF595959" HorizontalAlignment="Left" LargeChange="0.1" SmallChange="0.01" Style="{DynamicResource FlatSlider}" Background="#FF0062C3" />
                                     </Canvas>
-                                    <controls:MetroProgressBar Name="MoviePlayerProgress" Width="810"  Opacity="0.8" Value="1" VerticalAlignment="Top" Height="21" Maximum="1" SmallChange="0.00001" Foreground="#FF595959" HorizontalAlignment="Left" Background="#FF41B1E1" />
-                                    <Slider Name="MoviePlayerVolume" Width="250" Opacity="0.8" Value="1" VerticalAlignment="Top" Height="21" Maximum="1" Foreground="#FF595959" HorizontalAlignment="Left" LargeChange="0.1" SmallChange="0.01" Style="{DynamicResource FlatSlider}" Background="#FF0062C3" />
+
                                 </StackPanel>
                                 <!--<TextBlock Grid.Column="0" Grid.Row="1" Padding="5, 10, 0, 0" FontSize="16" Text="Описание: " FontFamily="Roboto" Foreground="#FFFF6600" TextWrapping="WrapWithOverflow"/>
                                 <TextBlock Grid.Column="1" Grid.Row="1" Name="MovieDescriptionGenre"  FontSize="16" FontFamily="Roboto" Foreground="Black" TextWrapping="WrapWithOverflow" Margin="0,10,0,0"/>

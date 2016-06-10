@@ -253,8 +253,8 @@ namespace Test
 
             public void OnMovieLoaded(Object Object, RoutedEventArgs routedEventArgs)
             {
-                Canvas.SetLeft(playButton, mediaElement.ActualWidth);
-                Canvas.SetTop(playButton, mediaElement.ActualHeight);
+                /*Canvas.SetLeft(playButton, mediaElement.ActualWidth);
+                Canvas.SetTop(playButton, mediaElement.ActualHeight);*/
             }
         }
     }
