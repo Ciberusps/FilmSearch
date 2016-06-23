@@ -29,7 +29,12 @@ namespace Test
         {
             InitializeComponent();
 
-            MoviePlayer.instance = new MoviePlayer(MoviePlayerMediaElement, MoviePlayerPreviewImage, MoviePlayerProgress, MoviePlayerVolume, MoviePlayerCanvas, MoviePlayerPlayButton);
+            MoviePlayer.instance = new MoviePlayer(MoviePlayerMediaElement, 
+                                                   MoviePlayerPreviewImage, 
+                                                   MoviePlayerProgress, 
+                                                   MoviePlayerVolume, 
+                                                   MoviePlayerCanvas, 
+                                                   MoviePlayerPlayButton);
 
             movieGenres = new ObservableCollection<MovieGenre>
             {
@@ -174,7 +179,6 @@ namespace Test
                 MoviePlayerPreviewImage.Source = new BitmapImage(new Uri(movie.gallery[1].ToString()));
             }
 
-
             //            MovieDescriptionRating.Text = movie.rating;
             ContentTabControl.SelectedItem = FilmDescriptionTab;
 
@@ -185,6 +189,8 @@ namespace Test
             //            MessageBox.Show(movie.NameRU + /*" " + movie.nameEN + " " + movie.country +*/ " " + movie.id + "" + movie.bigImage);
         }
 
+        
+        
         private void MovieDescriptionTrailer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             MoviePlayer.instance.ChangeState();
@@ -193,11 +199,20 @@ namespace Test
         private void MoviePreviewImage_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             MoviePlayer.instance.Play();
+
+            Console.Write("Height: " + MoviePlayerMediaElement.ActualHeight + "\n");
+            Console.Write("Width: " + MoviePlayerMediaElement.ActualWidth + "\n");
+
+            Canvas.SetLeft(MoviePlayer.instance.playButton, MoviePlayer.instance.mediaElement.Width / 2);
+            Canvas.SetTop(MoviePlayer.instance.playButton, MoviePlayer.instance.mediaElement.Height / 2);
         }
 
 
         public class MoviePlayer
         {
+            public delegate void LoadedEventHandler(Object Object, RoutedEventArgs routedEventArgs);
+            public event LoadedEventHandler Opened;
+
             public static MoviePlayer instance;
 
             public MediaElement mediaElement;
@@ -218,7 +233,7 @@ namespace Test
                 this.canvas = canvas;
                 this.playButton = playButton;
 
-                mediaElement.Loaded += OnMovieLoaded;
+//                mediaElement.MediaOpened += Opened;
             }
 
             public void Play()
@@ -251,11 +266,12 @@ namespace Test
                 }
             }
 
-            public void OnMovieLoaded(Object Object, RoutedEventArgs routedEventArgs)
-            {
-                /*Canvas.SetLeft(playButton, mediaElement.ActualWidth);
-                Canvas.SetTop(playButton, mediaElement.ActualHeight);*/
-            }
+        }
+
+        private void MoviePlayerPreviewImage_Loaded(object sender, RoutedEventArgs e)
+        {
+            Canvas.SetLeft(MoviePlayer.instance.playButton, this.ActualWidth / 2);
+            Canvas.SetTop(MoviePlayer.instance.playButton, this.ActualHeight / 2);
         }
     }
 
@@ -510,5 +526,4 @@ namespace Test
 
         public static MovieRequest movieRequest = MovieRequest.TopBestMovies;
     }
-
 }
