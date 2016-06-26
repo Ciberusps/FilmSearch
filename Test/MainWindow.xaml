@@ -285,18 +285,38 @@
                                 <TextBlock Grid.Column="0" Grid.Row="12" Padding="5, 10, 0, 0" FontSize="16" Text="Трейлер: " FontFamily="Roboto" Foreground="#FFFF6600" TextWrapping="WrapWithOverflow"/>
                                 <StackPanel Grid.Column="1" Grid.Row="12">
                                     <!--                                    <Controls:MetroProgressBar />-->
-                                    <Canvas Name="MoviePlayerCanvas" Width="790" MinHeight="{Binding ElementName=MoviePlayerMediaElement, Path=ActualHeight}" ScrollViewer.CanContentScroll="True">
-                                        <Button Name="MoviePlayerPlayButton" Canvas.Bottom="0" Canvas.Left="0"  Canvas.ZIndex="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                            <Button.Template>
-                                                <ControlTemplate>
-                                                    <Polygon Points="0,0 0,26 17,13" Fill="#80000000" Stroke="White"/>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-                                        <Image Name="MoviePlayerPreviewImage" Canvas.ZIndex="1" Width="{Binding ElementName=MoviePlayerCanvas, Path=ActualWidth}" MinHeight="{Binding ElementName=MoviePlayerMediaElement, Path=ActualHeight}" Canvas.Top="0" Canvas.Left="0"  PreviewMouseDown="MoviePreviewImage_PreviewMouseDown" Stretch="UniformToFill" Loaded="MoviePlayerPreviewImage_Loaded"/>
-                                        <MediaElement Name="MoviePlayerMediaElement" Width="{Binding ElementName=MoviePlayerCanvas, Path=ActualWidth}" Canvas.ZIndex="0" Canvas.Top="0" Canvas.Left="0" Margin="0,10,0,0" LoadedBehavior="Manual" PreviewMouseDown="MovieDescriptionTrailer_PreviewMouseDown" Stretch="Fill"/>
-                                        <controls:MetroProgressBar Width="{Binding ElementName=MoviePlayerCanvas, Path=ActualWidth}" Height="{Binding ElementName=MoviePlayerCanvas, Path=ActualHeight}" Canvas.Bottom="0" Canvas.Left="0" Name="MoviePlayerProgress" Opacity="0.8" Value="1" VerticalAlignment="Top" Maximum="1" SmallChange="0.00001" Foreground="#FF595959" HorizontalAlignment="Left" Background="#FF41B1E1" />
-                                        <Slider Name="MoviePlayerVolume" Width="250" Opacity="0.8" Canvas.Bottom="0" VerticalAlignment="Top" Height="21" Maximum="1" Foreground="#FF0062C3" HorizontalAlignment="Left" LargeChange="0.01" SmallChange="0.01" Style="{DynamicResource FlatSlider}" Background="#FF595959" Value="1" />
+                                    <Canvas Name="MoviePlayerCanvas" Width="790" MinHeight="{Binding ElementName=MoviePlayerMediaElement, Path=ActualHeight}" ScrollViewer.CanContentScroll="True" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0" MouseEnter="MoviePlayerCanvas_MouseEnter" MouseLeave="MoviePlayerCanvas_MouseLeave">
+                                        <MediaElement Name="MoviePlayerMediaElement" Width="{Binding ElementName=MoviePlayerCanvas, Path=ActualWidth}" Canvas.ZIndex="0" Canvas.Top="0" Canvas.Left="0" Margin="0" LoadedBehavior="Manual" PreviewMouseDown="MovieDescriptionTrailer_PreviewMouseDown" Stretch="Fill">
+
+                                        </MediaElement>
+                                        <Grid>
+                                            <Image Name="MoviePlayerPreviewImage" Canvas.ZIndex="1" Width="{Binding ElementName=MoviePlayerCanvas, Path=ActualWidth}" Height="{Binding ElementName=MoviePlayerMediaElement, Path=ActualHeight}" Canvas.Top="0" Canvas.Left="0"  PreviewMouseDown="MoviePreviewImage_PreviewMouseDown" Stretch="UniformToFill"/>
+                                            <Button Name="MoviePlayerPreviewPlayButton" Canvas.Bottom="6" Canvas.Left="10"  Canvas.ZIndex="2" HorizontalAlignment="Center" Width="70" Height="40" Margin="0" DockPanel.Dock="Left" VerticalAlignment="Center" Click="MoviePlayerPreviewPlayButton_Click">
+                                                <Button.Template>
+                                                    <ControlTemplate>
+                                                        <Polygon Points="0,0 0,35 24,17" Fill="White" Stroke="White" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        <!--StackPanel Background="#FF595959" Height="Auto" Width="Auto" Margin="1,-1,-1,3">
+                                                        <Polygon Points="0,5 0,30 17,17" Fill="White" Stroke="White" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </-->
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                        </Grid>
+
+                                        <Grid Name="MoviePlayerControllers"  Canvas.Bottom="0">
+                                            <Image Source="Images/UI/Black.png" Width="{Binding ElementName=MoviePlayerCanvas, Path=ActualWidth}" Height="50" OpacityMask="#BF000000" Stretch="Fill"/>
+                                            <DockPanel>
+                                                <Button Name="MoviePlayerPlayButton" Canvas.ZIndex="2" HorizontalAlignment="Left" Width="70" Height="40" Margin="10,0,0,0" BorderThickness="1" Background="#FF595959" BorderBrush="#FF1D1D1D" Click="MoviePlayerPlayButton_Click">
+                                                    <Image x:Name="MoviePlayerPlayButtonImage" Height="18" Width="18">
+                                                        <Image.Source>
+                                                            <BitmapImage UriSource="Images/UI/play.png"></BitmapImage>
+                                                        </Image.Source>
+                                                    </Image>
+                                                </Button>
+                                                <Slider Name="MoviePlayerTimeLine" Canvas.ZIndex="2" Width="555" Height="22" Opacity="0.8" VerticalAlignment="Center" Maximum="1" SmallChange="0.00001" Foreground="#FF41B1E1" HorizontalAlignment="Center" Style="{DynamicResource FlatSlider}" Background="#FF595959" Margin="10,14,0,14" Value="0.5" LostMouseCapture="MoviePlayerTimeLine_LostMouseCapture"/>
+                                                <Slider Name="MoviePlayerVolume" Canvas.ZIndex="3" Width="120" Opacity="0.8" VerticalAlignment="Center" Height="21" Maximum="1" Foreground="#FF0062C3" HorizontalAlignment="Left" LargeChange="0.01" SmallChange="0.00001" Style="{DynamicResource FlatSlider}" Background="#FF595959" Value="0.5" Margin="10,0,0,0" ValueChanged="MoviePlayerVolume_ValueChanged"/>
+                                            </DockPanel>
+                                        </Grid>
                                     </Canvas>
 
                                 </StackPanel>

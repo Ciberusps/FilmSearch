@@ -363,6 +363,13 @@
   <ItemGroup>
     <Resource Include="Images\UI\filmsearch.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\UI\Black.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\UI\pause.png" />
+    <Resource Include="Images\UI\play.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

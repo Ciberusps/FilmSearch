@@ -14,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json.Linq;
 using xZune.Vlc;
-using Vlc = xZune.Vlc.Vlc;
 
 namespace Test
 {
@@ -29,12 +28,15 @@ namespace Test
         {
             InitializeComponent();
 
-            MoviePlayer.instance = new MoviePlayer(MoviePlayerMediaElement, 
-                                                   MoviePlayerPreviewImage, 
-                                                   MoviePlayerProgress, 
-                                                   MoviePlayerVolume, 
-                                                   MoviePlayerCanvas, 
-                                                   MoviePlayerPlayButton);
+            MoviePlayer.instance = new MoviePlayer(MoviePlayerMediaElement,
+                                                   MoviePlayerPreviewImage,
+                                                   MoviePlayerPreviewPlayButton,
+                                                   MoviePlayerTimeLine,
+                                                   MoviePlayerVolume,
+                                                   MoviePlayerCanvas,
+                                                   MoviePlayerPlayButton,
+                                                   MoviePlayerControllers,
+                                                   MoviePlayerPlayButtonImage);
 
             movieGenres = new ObservableCollection<MovieGenre>
             {
@@ -145,6 +147,7 @@ namespace Test
         private void ShowGenreTab(object sender, RoutedEventArgs e)
         {
             ContentTabControl.SelectedItem = GenresTab;
+            MoviePlayer.instance.Refresh();
         }
 
         private void GenreMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -161,15 +164,31 @@ namespace Test
             MovieDescriptionNameRU.Text = movie.nameRU;
             MovieDescriptionNameEN.Text = movie.nameEN;
 
-            if (movie.year == null) MovieDescriptionYear.Text = "неизвестно"; else MovieDescriptionYear.Text = movie.year;
-            if (movie.country == null) MovieDescriptionCountry.Text = "неизвестно"; else MovieDescriptionCountry.Text = movie.country;
-            if (movie.slogan == null) MovieDescriptionSlogan.Text = "неизвестно"; else MovieDescriptionSlogan.Text = movie.slogan;
+            if (movie.year == null) MovieDescriptionYear.Text = "неизвестно";
+            else MovieDescriptionYear.Text = movie.year;
+            if (movie.country == null) MovieDescriptionCountry.Text = "неизвестно";
+            else MovieDescriptionCountry.Text = movie.country;
+            if (movie.slogan == null) MovieDescriptionSlogan.Text = "неизвестно";
+            else MovieDescriptionSlogan.Text = movie.slogan;
 
-            if (movie.genre == null) MovieDescriptionGenre.Text = "неизвестно"; else MovieDescriptionGenre.Text = movie.genre;
-            if (movie.budgetData.budget == null) MovieDescriptionBudget.Text = "неизвестно"; else MovieDescriptionBudget.Text = movie.budgetData.budget;
-            if (movie.budgetData.grossRU == null) MovieDescriptionGrossRU.Text = "неизвестно"; else MovieDescriptionGrossRU.Text = movie.budgetData.grossRU;
-            if (movie.budgetData.grossUSA == null) MovieDescriptionGenreGrossUSA.Text = "неизвестно"; else MovieDescriptionGenreGrossUSA.Text = movie.budgetData.grossUSA;
-            if (movie.budgetData.grossWorld == null) MovieDescriptionGrossWorld.Text = "неизвестно"; else MovieDescriptionGrossWorld.Text = movie.budgetData.grossWorld;
+
+            if (movie.genre == null) MovieDescriptionGenre.Text = "неизвестно";
+            else MovieDescriptionGenre.Text = movie.genre;
+            if (movie.budgetData != null)
+            {
+                if (movie.budgetData.budget == null) MovieDescriptionBudget.Text = "неизвестно";
+                else MovieDescriptionBudget.Text = movie.budgetData.budget;
+
+                if (movie.budgetData.grossRU == null) MovieDescriptionGrossRU.Text = "неизвестно";
+                else MovieDescriptionGrossRU.Text = movie.budgetData.grossRU;
+
+                if (movie.budgetData.grossUSA == null) MovieDescriptionGenreGrossUSA.Text = "неизвестно";
+                else MovieDescriptionGenreGrossUSA.Text = movie.budgetData.grossUSA;
+
+                if (movie.budgetData.grossWorld == null) MovieDescriptionGrossWorld.Text = "неизвестно";
+                else MovieDescriptionGrossWorld.Text = movie.budgetData.grossWorld;
+            }
+
             if (movie.rentData.premiereWorld == null) MovieDescriptionPremiereWorld.Text = "неизвестно"; else MovieDescriptionPremiereWorld.Text = movie.rentData.premiereWorld;
             if (movie.rentData.premiereRU == null) MovieDescriptionPremiereRU.Text = "неизвестно"; else MovieDescriptionPremiereRU.Text = movie.rentData.premiereRU;
             if (movie.description == null) MovieDescriptionDescription.Text = "неизвестно"; else MovieDescriptionDescription.Text = movie.description;
@@ -189,8 +208,8 @@ namespace Test
             //            MessageBox.Show(movie.NameRU + /*" " + movie.nameEN + " " + movie.country +*/ " " + movie.id + "" + movie.bigImage);
         }
 
-        
-        
+
+
         private void MovieDescriptionTrailer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             MoviePlayer.instance.ChangeState();
@@ -199,12 +218,6 @@ namespace Test
         private void MoviePreviewImage_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             MoviePlayer.instance.Play();
-
-            Console.Write("Height: " + MoviePlayerMediaElement.ActualHeight + "\n");
-            Console.Write("Width: " + MoviePlayerMediaElement.ActualWidth + "\n");
-
-            Canvas.SetLeft(MoviePlayer.instance.playButton, MoviePlayer.instance.mediaElement.Width / 2);
-            Canvas.SetTop(MoviePlayer.instance.playButton, MoviePlayer.instance.mediaElement.Height / 2);
         }
 
 
@@ -215,25 +228,58 @@ namespace Test
 
             public static MoviePlayer instance;
 
+            public static string playButtonPath = "Images/UI/play.png";
+            public static string pauseButtonPath = "Images/UI/pause.png";
+
             public MediaElement mediaElement;
             public Image previewImage;
-            public ProgressBar movieProgressBar;
+            public Button previewPlayerImage;
+            public Slider timeLine;
             public Slider volumeSlider;
             public Canvas canvas;
             public Button playButton;
-            public bool isPlaying = false;
-            public bool isPlayed = false;
+            public Grid controllers;
+            public Image playButtonImage;
+            private bool isPlaying = false;
+            private bool isPlayed = false;
+            private bool fullscreen = false;
+            private System.Windows.Size _previousVideoContainerSize;
 
-            public MoviePlayer(MediaElement player, Image previewImage, ProgressBar movieProgressBar, Slider volumeSlider, Canvas canvas, Button playButton)
+            public MoviePlayer(MediaElement player,
+                               Image previewImage,
+                               Button previewPlayButton,
+                               Slider timeLine,
+                               Slider volumeSlider,
+                               Canvas canvas,
+                               Button playButton,
+                               Grid controllers,
+                               Image playButtonImage)
             {
                 this.mediaElement = player;
                 this.previewImage = previewImage;
-                this.movieProgressBar = movieProgressBar;
+                this.previewPlayerImage = previewPlayButton;
+                this.timeLine = timeLine;
                 this.volumeSlider = volumeSlider;
                 this.canvas = canvas;
                 this.playButton = playButton;
+                this.controllers = controllers;
+                this.playButtonImage = playButtonImage;
 
-//                mediaElement.MediaOpened += Opened;
+                mediaElement.Loaded += LoadedHandler;
+
+                this.HidePlayerControls();
+                _previousVideoContainerSize = new System.Windows.Size();
+            }
+
+            public void Refresh()
+            {
+                isPlayed = false;
+                isPlaying = false;
+                mediaElement.Pause();
+                playButtonImage.Source = new BitmapImage(new Uri("/" + @pauseButtonPath, UriKind.Relative));
+
+                ShowPreviewImage();
+                HidePlayerControls();
             }
 
             public void Play()
@@ -241,17 +287,23 @@ namespace Test
                 if (!isPlayed)
                 {
                     isPlayed = true;
-                    previewImage.Visibility = Visibility.Collapsed;
+
+                    HidePreviewImage();
+                    ShowPlayerControls();
+
+                    timeLine.Maximum = mediaElement.NaturalDuration.TimeSpan.TotalSeconds;
                 }
 
                 isPlaying = true;
                 mediaElement.Play();
+                playButtonImage.Source = new BitmapImage(new Uri("/" + @pauseButtonPath, UriKind.Relative));
             }
 
             public void Pause()
             {
                 isPlaying = false;
                 mediaElement.Pause();
+                playButtonImage.Source = new BitmapImage(new Uri("/" + @playButtonPath, UriKind.Relative));
             }
 
             public void ChangeState()
@@ -266,12 +318,71 @@ namespace Test
                 }
             }
 
+            public void LoadedHandler(Object Object, RoutedEventArgs routedEventArgs)
+            {
+                mediaElement.Play();
+                mediaElement.Pause();
+            }
+
+            public void HidePlayerControls()
+            {
+                controllers.Visibility = Visibility.Hidden;
+            }
+
+            public void ShowPlayerControls()
+            {
+                if (isPlayed)
+                    controllers.Visibility = Visibility.Visible;
+            }
+
+            private void ShowPreviewImage()
+            {
+                previewImage.Visibility = Visibility.Visible;
+                previewPlayerImage.Visibility = Visibility.Visible;
+            }
+
+            private void HidePreviewImage()
+            {
+                previewImage.Visibility = Visibility.Hidden;
+                previewPlayerImage.Visibility = Visibility.Hidden;
+            }
         }
 
-        private void MoviePlayerPreviewImage_Loaded(object sender, RoutedEventArgs e)
+        private void MoviePlayerPreviewPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            Canvas.SetLeft(MoviePlayer.instance.playButton, this.ActualWidth / 2);
-            Canvas.SetTop(MoviePlayer.instance.playButton, this.ActualHeight / 2);
+            MoviePlayer.instance.Play();
+        }
+
+        private void MoviePlayerPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoviePlayer.instance.ChangeState();
+        }
+
+        private void MoviePlayerCanvas_MouseEnter(object sender, MouseEventArgs e)
+        {
+            MoviePlayer.instance.ShowPlayerControls();
+        }
+
+        private void MoviePlayerCanvas_MouseLeave(object sender, MouseEventArgs e)
+        {
+            MoviePlayer.instance.HidePlayerControls();
+        }
+
+        private void MoviePlayerVolume_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (MoviePlayer.instance != null)
+                MoviePlayer.instance.mediaElement.Volume = MoviePlayer.instance.volumeSlider.Value;
+        }
+
+        private void MoviePlayerTimeLine_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            TimeSpan time = new TimeSpan(0, 0, Convert.ToInt32(Math.Round(MoviePlayer.instance.timeLine.Value))); //отлавливаем позицию на которую нужно перемотать трек
+            MoviePlayer.instance.mediaElement.Position = time;
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 
