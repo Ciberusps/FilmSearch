@@ -7,8 +7,8 @@
     <ProjectGuid>{F903FE55-2597-4039-B4AD-A2FEE3997320}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Test</RootNamespace>
-    <AssemblyName>Test</AssemblyName>
+    <RootNamespace>FilmSearch</RootNamespace>
+    <AssemblyName>FilmSearch</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -150,6 +150,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Film-Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EasyHttp, Version=1.6.86.0, Culture=neutral, processorArchitecture=MSIL">
@@ -319,12 +322,6 @@
     <Resource Include="Images\UI\map.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MaterialMenu\MaterialMenu.csproj">
-      <Project>{dc810fba-1dc9-429f-a247-35075ea49648}</Project>
-      <Name>MaterialMenu</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\UI\search.png" />
   </ItemGroup>
   <ItemGroup>
@@ -369,6 +366,12 @@
   <ItemGroup>
     <Resource Include="Images\UI\pause.png" />
     <Resource Include="Images\UI\play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Film-Icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\FilmSearchIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

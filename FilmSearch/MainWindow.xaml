@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:materialMenu="clr-namespace:MaterialMenu;assembly=MaterialMenu"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:Cache="clr-namespace:System.Net.Cache;assembly=System" x:Class="Test.MainWindow"
         mc:Ignorable="d"
@@ -11,7 +10,7 @@
         WindowStartupLocation="CenterScreen"
         FontFamily="Calibri"
         FontSize="16"
-        Foreground="WhiteSmoke" TitleForeground="White" WindowTitleBrush="#FF3A3A3A" ResizeMode="CanResizeWithGrip">
+        Foreground="WhiteSmoke" TitleForeground="White" WindowTitleBrush="#FF2A579A" ResizeMode="CanResizeWithGrip" KeyUp="MetroWindow_KeyUp" Icon="Images/FilmSearchIcon.png" IconOverlayBehavior="Flyouts">
 
     <controls:MetroWindow.Resources>
         <DataTemplate x:Key="GenresListViewItemTemplate">
@@ -57,6 +56,26 @@
             </Border>
         </DataTemplate>
 
+        <DataTemplate x:Key="SearchListViewItemTemplate">
+            <Border Margin="5" >
+                <Border.Effect>
+                    <DropShadowEffect Color="#FFE8E8E8" ShadowDepth="3"/>
+                </Border.Effect>
+                <StackPanel ToolTip="{Binding nameRU}" Background="White" Width="180" ScrollViewer.CanContentScroll="True">
+                    <Image  Height="260" Width="300">
+                        <Image.Source>
+                            <BitmapImage DecodePixelWidth="260" UriSource="{Binding bigImage}">
+                                <BitmapImage.UriCachePolicy>
+                                    <Cache:HttpRequestCachePolicy/>
+                                </BitmapImage.UriCachePolicy>
+                            </BitmapImage>
+                        </Image.Source>
+                    </Image>
+                    <TextBlock Padding="8, 10" FontSize="18" Text="{Binding nameRU}" FontFamily="Roboto" Foreground="Black"/>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
         <DataTemplate x:Key="MovieTemplate">
             <Border Margin="5" >
                 <Border.Effect>
@@ -87,68 +106,6 @@
     </controls:MetroWindow.Resources>
 
     <Grid>
-        <materialMenu:SideMenu HorizontalAlignment="Left" x:Name="Menu"
-			MenuWidth="300"
-			Theme="Default"
-			State="Hidden">
-            <materialMenu:SideMenu.Menu>
-                <ScrollViewer VerticalScrollBarVisibility="Hidden">
-                    <StackPanel Orientation="Vertical">
-                        <Border>
-                            <Border.Background>
-                                <ImageBrush ImageSource="Images/UI/Seamless-Polygon-Backgrounds-Vol2-full.jpg" Stretch="None" AlignmentX="Right"/>
-                            </Border.Background>
-                            <Grid Margin="10">
-                                <TextBox Height="200" BorderThickness="0" Background="Transparent" VerticalContentAlignment="Bottom" FontFamily="Calibri" FontSize="18" Foreground="WhiteSmoke" FontWeight="Bold" Text="Welcome"/>
-                            </Grid>
-                        </Border>
-                        <materialMenu:MenuButton Image="Images/UI/boss.png" Text="Administration">
-                            <materialMenu:MenuButton.Children>
-                                <materialMenu:MenuButton Image="Images/UI/boss.png" Text="Administration"/>
-                                <materialMenu:MenuButton Image="Images/UI/bugl.png" Text="Logistics">
-                                    <materialMenu:MenuButton.Children>
-                                        <materialMenu:MenuButton Image="Images/UI/boss.png" Text="Administration"/>
-                                        <materialMenu:MenuButton Image="Images/UI/bugl.png" Text="Logistics"/>
-                                        <materialMenu:MenuButton Image="Images/UI/orgl.png" Text="Org"/>
-                                        <materialMenu:MenuButton Image="Images/UI/savel.png" Text="SaveChanges"/>
-                                        <materialMenu:MenuButton Image="Images/UI/helpl.png" Text="Help">
-                                            <materialMenu:MenuButton.Children>
-                                                <materialMenu:MenuButton Image="Images/UI/boss.png" Text="Administration"/>
-                                                <materialMenu:MenuButton Image="Images/UI/bugl.png" Text="Logistics"/>
-                                                <materialMenu:MenuButton Image="Images/UI/orgl.png" Text="Org"/>
-                                                <materialMenu:MenuButton Image="Images/UI/savel.png" Text="SaveChanges"/>
-                                                <materialMenu:MenuButton Image="Images/UI/helpl.png" Text="Help"/>
-                                                <materialMenu:MenuButton Image="Images/UI/timesl.png" Text="Close Menu" MouseDown="CloseClick"/>
-                                            </materialMenu:MenuButton.Children>
-                                        </materialMenu:MenuButton>
-                                        <materialMenu:MenuButton Image="Images/UI/timesl.png" Text="Close Menu" MouseDown="CloseClick"/>
-                                    </materialMenu:MenuButton.Children>
-                                </materialMenu:MenuButton>
-                                <materialMenu:MenuButton Image="Images/UI/orgl.png" Text="Org"/>
-                                <materialMenu:MenuButton Image="Images/UI/savel.png" Text="SaveChanges"/>
-                                <materialMenu:MenuButton Image="Images/UI/helpl.png" Text="Help"/>
-                                <materialMenu:MenuButton Image="Images/UI/timesl.png" Text="Close Menu" MouseDown="CloseClick"/>
-                            </materialMenu:MenuButton.Children>
-                        </materialMenu:MenuButton>
-                        <materialMenu:MenuButton Image="Images/UI/boxl.png" Text="Packing" MouseDown="UIElement_OnMouseDown"/>
-                        <materialMenu:MenuButton Image="Images/UI/bugl.png" Text="Logistics"/>
-                        <materialMenu:MenuButton Image="Images/UI/orgl.png" Text="Org"/>
-                        <materialMenu:MenuButton Image="Images/UI/savel.png" Text="SaveChanges">
-                            <materialMenu:MenuButton.Children>
-                                <materialMenu:MenuButton Image="Images/UI/boss.png" Text="Administration"/>
-                                <materialMenu:MenuButton Image="Images/UI/bugl.png" Text="Logistics"/>
-                                <materialMenu:MenuButton Image="Images/UI/orgl.png" Text="Org"/>
-                                <materialMenu:MenuButton Image="Images/UI/savel.png" Text="SaveChanges"/>
-                                <materialMenu:MenuButton Image="Images/UI/helpl.png" Text="Help"/>
-                                <materialMenu:MenuButton Image="Images/UI/timesl.png" Text="Close Menu" MouseDown="CloseClick"/>
-                            </materialMenu:MenuButton.Children>
-                        </materialMenu:MenuButton>
-                        <materialMenu:MenuButton Image="Images/UI/helpl.png" Text="Help"/>
-                        <materialMenu:MenuButton Image="Images/UI/timesl.png" Text="Close Menu" MouseDown="CloseClick"/>
-                    </StackPanel>
-                </ScrollViewer>
-            </materialMenu:SideMenu.Menu>
-        </materialMenu:SideMenu>
         <StackPanel Orientation="Vertical">
             <DockPanel Margin="10,20" Background="WhiteSmoke">
                 <Button BorderThickness="0"  
@@ -163,9 +120,9 @@
                     <Image Source="Images/UI/filmsearch.png" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="253" Height="32"/>
                 </Button>
                 <Image Source="Images/UI/search-black.png" Margin="10,0,0,0" VerticalAlignment="Stretch" Width="34" Height="34"/>
-                <TextBox Height="40" Margin="10,10,0,10" Width="250" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="21.333"/>
-                <Button x:Name="SearchButton" Content="Search" Width="100" Height="40" FontSize="16" OpacityMask="Black" Background="White"/>
-                <Button Margin="10" Click="ButtonBase_OnClick" Width="51" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Red" BorderBrush="Red" OpacityMask="Black" Background="Red">
+                <TextBox Name="SearchTextBox" Height="40" Margin="10,10,0,10" Width="250" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="21.333"/>
+                <Button x:Name="SearchButton" Content="Search" Width="100" Height="40" FontSize="16" OpacityMask="Black" Background="White" Click="SearchButton_Click"/>
+                <Button Margin="10" Width="51" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="Red" BorderBrush="Red" OpacityMask="Black" Background="Red" Visibility="Hidden">
                     <Button.Template>
                         <ControlTemplate>
                             <Border Height="50" Width="50" HorizontalAlignment="Right"
@@ -328,6 +285,17 @@
                         </Grid>
                     </ScrollViewer>
                 </Border>
+            </controls:MetroTabItem>
+
+            <controls:MetroTabItem x:Name="SearchTab">
+                <ListView x:Name="SearchList" 
+					ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+					Margin="0" 
+					Padding="10, 10, 0, 0"
+					Background="#FFEEEEEE" 
+					BorderThickness="0"
+					ItemTemplate="{StaticResource SearchListViewItemTemplate}"
+					ItemsPanel="{StaticResource ListPanelTemplate}" PreviewMouseDoubleClick="SearchMovieMouseDoubleClick" ScrollViewer.CanContentScroll="True"/>
             </controls:MetroTabItem>
         </controls:MetroAnimatedTabControl>
 

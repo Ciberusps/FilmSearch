@@ -2,18 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Net.Cache;
-using System.Security.Permissions;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json.Linq;
-using xZune.Vlc;
 
 namespace Test
 {
@@ -23,6 +20,7 @@ namespace Test
     public partial class MainWindow
     {
         public ObservableCollection<MovieGenre> movieGenres { get; set; }
+        public ObservableCollection<Movie> searchMovies { get; set; }
 
         public MainWindow()
         {
@@ -67,72 +65,10 @@ namespace Test
             MoviesGenresList.ItemsSource = movieGenres;
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-        {
-            Menu.Toggle();
-        }
-
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             MessageBox.Show("You Clicked Packing!");
         }
-
-        private void CloseClick(object sender, RoutedEventArgs e)
-        {
-            Menu.Hide();
-
-        }
-
-        /*private void DefaultClick(object sender, RoutedEventArgs e)
-        {
-            Menu.Theme = SideMenuTheme.Default;
-        }
-
-        private void PrimaryClick(object sender, RoutedEventArgs e)
-        {
-            Menu.Theme = SideMenuTheme.Primary;
-        }
-
-        private void SuccessClick(object sender, RoutedEventArgs e)
-        {
-            Menu.Theme = SideMenuTheme.Success;
-        }
-
-        private void WarningClick(object sender, RoutedEventArgs e)
-        {
-            Menu.Theme = SideMenuTheme.Warning;
-        }
-
-        private void DangerClick(object sender, RoutedEventArgs e)
-        {
-            Menu.Theme = SideMenuTheme.Danger;
-        }*/
-
-
-
-        /*private void ToggleClosingTypeClick(object sender, RoutedEventArgs e)
-        {
-            Menu.ClosingType = Menu.ClosingType == ClosingType.Auto
-                ? ClosingType.Manual
-                : ClosingType.Auto;
-        }
-
-        private SideMenu MapMenuToTheme(SideMenuTheme theme)
-        {
-            //this should not be necesray but colors are not changing correctly
-            //when changing theme porperty... maybe its needed to implement INotifyPropertyChanged
-            return new SideMenu
-            {
-                MenuWidth = Menu.MenuWidth,
-                Theme = theme,
-                Menu = Menu.Menu
-            };
-        }*/
-        /* private void ProgressBar_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-         {
-             var value = (float)(e.GetPosition(ProgressBar).X / ProgressBar.ActualWidth);
-             ProgressBar.Value = value;
-         }*/
 
         private void MoviesGenresList_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -150,13 +86,61 @@ namespace Test
             MoviePlayer.instance.Refresh();
         }
 
+        private void SearchMovieMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            Movie movie = (Movie)SearchList.SelectedItem;
+            movie.GetMovie();
+
+            MovieDescriptionImage.Source = new BitmapImage(new Uri(movie.bigImage));
+
+
+            MovieDescriptionNameRU.Text = movie.nameRU;
+            MovieDescriptionNameEN.Text = movie.nameEN;
+
+            if (movie.year == null) MovieDescriptionYear.Text = "неизвестно";
+            else MovieDescriptionYear.Text = movie.year;
+            if (movie.country == null) MovieDescriptionCountry.Text = "неизвестно";
+            else MovieDescriptionCountry.Text = movie.country;
+            if (movie.slogan == null) MovieDescriptionSlogan.Text = "неизвестно";
+            else MovieDescriptionSlogan.Text = movie.slogan;
+
+
+            if (movie.genre == null) MovieDescriptionGenre.Text = "неизвестно";
+            else MovieDescriptionGenre.Text = movie.genre;
+            if (movie.budgetData != null)
+            {
+                if (movie.budgetData.budget == null) MovieDescriptionBudget.Text = "неизвестно";
+                else MovieDescriptionBudget.Text = movie.budgetData.budget;
+
+                if (movie.budgetData.grossRU == null) MovieDescriptionGrossRU.Text = "неизвестно";
+                else MovieDescriptionGrossRU.Text = movie.budgetData.grossRU;
+
+                if (movie.budgetData.grossUSA == null) MovieDescriptionGenreGrossUSA.Text = "неизвестно";
+                else MovieDescriptionGenreGrossUSA.Text = movie.budgetData.grossUSA;
+
+                if (movie.budgetData.grossWorld == null) MovieDescriptionGrossWorld.Text = "неизвестно";
+                else MovieDescriptionGrossWorld.Text = movie.budgetData.grossWorld;
+            }
+
+            if (movie.rentData != null)
+            {
+                if (movie.rentData.premiereWorld == null) MovieDescriptionPremiereWorld.Text = "неизвестно"; else MovieDescriptionPremiereWorld.Text = movie.rentData.premiereWorld;
+                if (movie.rentData.premiereRU == null) MovieDescriptionPremiereRU.Text = "неизвестно"; else MovieDescriptionPremiereRU.Text = movie.rentData.premiereRU;
+            }
+            if (movie.description == null) MovieDescriptionDescription.Text = "неизвестно"; else MovieDescriptionDescription.Text = movie.description;
+            if (movie.videoURL != null)
+            {
+                MoviePlayerMediaElement.Source = new Uri(movie.videoURL);
+                MoviePlayerPreviewImage.Source = new BitmapImage(new Uri(movie.gallery[1].ToString()));
+            }
+
+            ContentTabControl.SelectedItem = FilmDescriptionTab;
+        }
+
         private void GenreMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Movie movie = (Movie)GenreList.SelectedItem;
             movie.GetMovie();
-
-            /* MovieDescription.DataContext = movie;
-             MovieDescription.Content = movie;*/
 
             MovieDescriptionImage.Source = new BitmapImage(new Uri(movie.bigImage));
 
@@ -198,17 +182,8 @@ namespace Test
                 MoviePlayerPreviewImage.Source = new BitmapImage(new Uri(movie.gallery[1].ToString()));
             }
 
-            //            MovieDescriptionRating.Text = movie.rating;
             ContentTabControl.SelectedItem = FilmDescriptionTab;
-
-            /*MyBitmapImage.Source = new BitmapImage(new Uri(movie.bigImage));
-            NameRU.Text = movie.nameRU;
-            Genre.Text = movie.genre;
-            Rating.Text = movie.rating;*/
-            //            MessageBox.Show(movie.NameRU + /*" " + movie.nameEN + " " + movie.country +*/ " " + movie.id + "" + movie.bigImage);
         }
-
-
 
         private void MovieDescriptionTrailer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -219,7 +194,6 @@ namespace Test
         {
             MoviePlayer.instance.Play();
         }
-
 
         public class MoviePlayer
         {
@@ -382,10 +356,52 @@ namespace Test
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
+            Search();
+        }
 
+        public void Search()
+        {
+            if (SearchTextBox.Text != "")
+            {
+                JObject jRoot =
+                    JObject.Parse(
+                        Caching.CacheRequest("http://api.kinopoisk.cf/searchFilms?keyword=" + SearchTextBox.Text));
+                JArray jMovies = jRoot["searchFilms"] as JArray;
+
+                searchMovies = new ObservableCollection<Movie>();
+
+                foreach (JObject movie in jMovies)
+                {
+                    Movie currentMovie = new Movie();
+
+                    if (movie["id"] != null) currentMovie.id = int.Parse(movie["id"].ToString());
+                    if (movie["year"] != null) currentMovie.year = movie["year"].ToString();
+                    if (movie["filmLength"] != null) currentMovie.filmLength = movie["filmLength"].ToString();
+                    if (movie["country"] != null) currentMovie.country = movie["country"].ToString();
+                    if (movie["genre"] != null) currentMovie.genre = movie["genre"].ToString();
+                    if (movie["rating"] != null) currentMovie.rating = movie["rating"].ToString();
+                    if (movie["nameRU"] != null) currentMovie.nameRU = movie["nameRU"].ToString();
+                    if (movie["nameEN"] != null) currentMovie.nameEN = movie["nameEN"].ToString();
+                    if (movie["posterURL"] != null) currentMovie.posterURL = movie["posterURL"].ToString();
+
+                    currentMovie.bigImage = Movie.FILM_BIG_IMAGE_REQUEST + currentMovie.id + ".jpg";
+                    currentMovie.smallImage = Movie.FILM_IMAGE_REQUEST + currentMovie.id + ".jpg";
+                    Console.WriteLine(currentMovie.bigImage);
+
+                    searchMovies.Add(currentMovie);
+                }
+
+                ContentTabControl.SelectedItem = SearchTab;
+                SearchList.ItemsSource = searchMovies;
+            }
+        }
+
+        private void MetroWindow_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                Search();
         }
     }
-
 
     public class MovieGenre
     {
